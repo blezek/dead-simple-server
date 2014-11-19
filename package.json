@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Daniel Blezek",
+  "keywords": "server browser-sync",
   "license": "BSD",
   "dependencies": {
     "body-parser": "^1.9.2",

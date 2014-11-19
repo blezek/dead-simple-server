@@ -1,0 +1,126 @@
+#!/usr/bin/env node
+
+var express = require('express');
+var app = express();
+var router = express.Router();
+var Datastore = require('nedb');
+var bodyParser = require('body-parser');
+// Get the BrowserSync object, so we can have multiple
+var BrowserSync = require('browser-sync/lib/browser-sync');
+var path = require('path');
+var program = require('commander');
+var pkg = require('./package.json');
+
+
+program
+.version(pkg.version)
+.option("-d, --database", 'Name of the database file, defaults to dss.db')
+.option("-p, --port", 'Port to run server on, defaults to 8847')
+.option("-o, --open", "Open a web browser on startup")
+.option("-l, --logging", "Amount of logging, one of 'silent', 'debug', or 'error', default is 'silent'")
+.parse(process.argv);
+
+var port = program.port || 8847;
+var dbFile = program.database || 'dss.db'
+var db = new Datastore({ filename: dbFile, autoload: true });
+var servers = {};
+
+
+// Parse json
+app.use(bodyParser.json()); // for parsing application/json
+
+function stopServer ( id ) {
+  if (servers[id]) {
+    var browserSync = servers[id];
+    if (browserSync.active) {
+      browserSync.cleanup(function() {
+      });
+    }
+  }
+}
+
+function startServer ( site ) {
+  stopServer(site.id);
+
+  var config = {
+    port: site.port,
+    server: {
+      baseDir: site.directory,
+      directory: true
+    },
+    logLevel: program.logging || "silent",
+    files: path.join ( site.directory, "**" )
+  }
+  var browserSync = new BrowserSync ( );
+  var pjson         = require("./package.json");
+  require("browser-sync/lib/public/init")(browserSync, pjson)(config);
+  // browserSync.init(config.files, config, pjson.version, function() {});
+  servers[site._id] = browserSync;
+}
+
+
+app.get('/', function(req,res) {
+  res.redirect("/index.html");
+});
+
+app.route('/rest/v1/sites')
+.get( function(req,res){
+  db.find({}, function(err,docs) {
+    res.json(docs);
+  })
+})
+// Create a new site
+.post(function(req,res){
+  var doc = req.body;
+  doc._id = req.port;
+  db.insert(req.body, function(err,newDoc) {
+    if ( err ) {
+      res.status(500).send(err);
+    } else {
+      startServer(newDoc);
+      res.sendStatus(200);
+    }
+  })
+});
+
+app.route('/rest/v1/sites/:id')
+.get (function(req,res){
+  db.find({id: req.params.id}, function(err,docs) {
+    res.json(docs);
+  })
+})
+// Update
+.put(function(req, res){
+  db.update({_id: req.body._id}, req.body, {}, function(err,newDoc) {
+    if ( err ) {
+      res.status(500).send(err);
+    } else {
+      res.sendStatus(200);
+    }
+  })
+})
+.delete( function(req,res) {
+  db.remove({_id: req.params.id}, {}, function(err,numRemoved) {
+    if ( err ) {
+      res.status(500).send(err);
+    } else {
+      stopServer(req.params.id);
+      res.sendStatus(200);
+    }
+  })
+});
+
+
+app.use(express.static(__dirname + "/app"));
+
+db.find({}, function(err,docs) {
+  for ( var i = 0; i < docs.length; i++ ) {
+    startServer(docs[i]);
+  }
+});
+
+app.listen(port);
+if ( program.open ) {
+  var open = require("open");
+  open("http://localhost:" + port);
+}

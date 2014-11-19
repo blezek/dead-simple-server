@@ -1,0 +1,29 @@
+<div class="modal-header">Edit user settings</div>
+<form name="siteForm">
+  <div class="modal-body">
+    <div class="form-group">
+      <label for="formname" class="control-label">Directory:</label>
+      <input ng-model="site.directory" name="directory" type="text" class="form-control" name="directory" placeholder="directory" required>
+      <span class="error" ng-show="siteForm.directory.$error.required">Directory name is required.</span>
+
+    </div>
+
+    <div class="form-group">
+      <label class="control-label">Description:</label>
+      <input class="form-control" ng-model="site.description" placeholder="description"></input>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label">Port:</label>
+      <input type="number" min="1024" max="65535" name="port" class="form-control" ng-model="site.port" placeholder="8123" required></input>
+      <span class="error" ng-show="siteForm.port.$error.number">Not a valid port number (must be between 1024 and 65535) </span>
+      <span class="error" ng-show="siteForm.port.$error.min || siteForm.port.$error.max">Port number out of range (must be between 1024 and 65535) </span>
+      <span class="error" ng-show="siteForm.port.$error.required">Port number is required (must be between 1024 and 65535) </span>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+    <button ng-disabled="siteForm.$invalid" class="btn btn-primary" ng-click="save()">Save</button>
+    <button class="btn btn-warning" ng-click="close()">Cancel</button>
+  </div>
+</form>

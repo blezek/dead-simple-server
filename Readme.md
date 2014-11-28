@@ -20,6 +20,8 @@ TL;DR
 dead-simple-server
 ```
 
+Visiting http://localhost:8847 will bring up the console page.  Multiple directories can be configured and served on different ports.
+
 ```bash
 ./dead-simple-server --help
 
@@ -31,7 +33,7 @@ dead-simple-server
     -V, --version   output the version number
     -d, --database  Name of the database file, defaults to dss.db
     -p, --port      Port to run server on, defaults to 8847
-    -o, --open      Open a web browser on startup
+    -q, --quiet     Do not open the control panel on startup
     -l, --logging   Amount of logging, one of 'silent', 'debug', or 'error', default is 'silent'
 ```
 
@@ -41,7 +43,18 @@ dead-simple-server
 - `--logging` how much logging do you want?  Default is `silent`
 
 ## Configuration
-New "sites" can be added by clicking the "+" on the configuration site.  A server listening at the specifed port will be started and the a page opened up showing the contents of the directory.
+
+![Control panel](control-panel.png)
+
+New "sites" can be added by clicking the "+" on the configuration site.  A server listening at the specified port will be started and the a page opened up showing the contents of the directory.
+
+![Add directory](add-directory.png)
+
+In this example, the directory `/Users/blezek/Project/build` will be served on http://localhost:8123.  This configuration will be saved for the next run of `dead-simple-server`.
+
+![Edit delete](edit-delete.png)
+
+Directories can be edited or deleted.
 
 ## License
 Copyright (c) 2014, Daniel Blezek,

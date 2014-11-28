@@ -16,7 +16,7 @@ program
 .version(pkg.version)
 .option("-d, --database", 'Name of the database file, defaults to dss.db')
 .option("-p, --port", 'Port to run server on, defaults to 8847')
-.option("-o, --open", "Open a web browser on startup")
+.option("-q, --quiet", "Do not open the control panel on startup")
 .option("-l, --logging", "Amount of logging, one of 'silent', 'debug', or 'error', default is 'silent'")
 .parse(process.argv);
 
@@ -44,6 +44,7 @@ function startServer ( site ) {
 
   var config = {
     port: site.port,
+    open: false,
     server: {
       baseDir: site.directory,
       directory: true
@@ -120,7 +121,9 @@ db.find({}, function(err,docs) {
 });
 
 app.listen(port);
-if ( program.open ) {
+if ( !program.quiet ) {
   var open = require("open");
   open("http://localhost:" + port);
+} else {
+  console.log ( "dead-simple-server can be configured on http://localhost:" + port );
 }

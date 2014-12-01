@@ -47,7 +47,8 @@ function startServer ( site ) {
     open: false,
     server: {
       baseDir: site.directory,
-      directory: true
+      // directory: true,
+      index: "index.html"
     },
     logLevel: program.logging || "silent",
     files: path.join ( site.directory, "**" )

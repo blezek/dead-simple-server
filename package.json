@@ -1,6 +1,6 @@
 {
   "name": "dead-simple-server",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A simple web server for multiple directories using BrowserSync.",
   "main": "dead-simple-server",
   "scripts": {
